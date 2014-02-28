@@ -26,16 +26,7 @@ var predictionio = function (app_key, options) {
   var make_request = function (endpoint, method, data, callback) {
     // TODO
     return true;
-  }
-
-  var param_allowed = function(allowed_param_array, param) {
-    for (var i = 0; i < allowed_param_array.length; i++) {
-      if (allowed_param_array[i] === "param") {
-        return true;
-      }
-      return false;
-    }
-  }
+  };
 
   // Adds a user, specified by the user_info JSON object, then calls the callback
   // function on the server's response.
@@ -45,16 +36,8 @@ var predictionio = function (app_key, options) {
       // pio_uid cannot contain \t or ,. How much error checking to do?
     }
 
-    // Copy the user_info and delete any unauthorized params.
-    var data = JSON.parse(JSON.stringify(user_info));
-    for(var propertyName in data) {
-      if (propertyName.slice(0,4) === 'pio_' && (!param_allowed(USER_PARAMS, propertyName))) {
-        delete data[propertyName];
-        // Log warning?
-      }
-    }
-
-    make_request(USERS_ENDPOINT.concat('.json'), 'POST', data, callback);
+    // Check the user_info for illegal keys, etc?
+    make_request(USERS_ENDPOINT.concat('.json'), 'POST', user_info, callback);
   }
 
   // Gets a user.
