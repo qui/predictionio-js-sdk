@@ -17,7 +17,7 @@ var predictionio = function (app_key, options) {
       throw new Error('An app key is required to use the API.');
   }
   APP_KEY = app_key;
-  if ( (options !== null) && (typeof options.host !== 'undefined') ) {
+  if ( (typeof options !== 'undefined') && (typeof options.host !== 'undefined') ) {
     HOST = options.host;
   }
 
@@ -28,11 +28,20 @@ var predictionio = function (app_key, options) {
     return true;
   }
 
+  var param_allowed = function(allowed_param_array, param) {
+    for (var i = 0; i < allowed_param_array.length; i++) {
+      if (allowed_param_array[i] === "param") {
+        return true;
+      }
+      return false;
+    }
+  }
+
   // Adds a user, specified by the user_info JSON object, then calls the callback
   // function on the server's response.
   var add_user = function (user_info, callback) {
-    if (typeof user_info.pio_uid === 'undefined"' {
-      throw new Error('To add a user, you must specify the user's pio_uid.'');
+    if (typeof user_info.pio_uid === 'undefined') {
+      throw new Error('To add a user, you must specify the user\'s pio_uid.');
       // pio_uid cannot contain \t or ,. How much error checking to do?
     }
 
