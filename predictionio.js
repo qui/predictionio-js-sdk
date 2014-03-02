@@ -8,10 +8,10 @@
 // - host: the address of the API server.
 var predictionio = function (app_key, options) {
 
-  var APP_KEY,
+  var pub = {},
+    APP_KEY,
     HOST = '',
-    USERS_ENDPOINT = 'users',
-    USER_PARAMS = ['pio_uid', 'pio_latlng', 'pio_inactive'];
+    USERS_ENDPOINT = 'users';
 
   if (!app_key) {
       throw new Error('An app key is required to use the API.');
@@ -30,7 +30,7 @@ var predictionio = function (app_key, options) {
 
   // Adds a user, specified by the user_info JSON object, then calls the callback
   // function on the server's response.
-  var add_user = function (user_info, callback) {
+  pub.add_user = function (user_info, callback) {
     if (typeof user_info.pio_uid === 'undefined') {
       throw new Error('To add a user, you must specify the user\'s pio_uid.');
       // pio_uid cannot contain \t or ,. How much error checking to do?
@@ -41,20 +41,16 @@ var predictionio = function (app_key, options) {
   }
 
   // Gets a user.
-  var get_user = function(pio_uid, callback) {
+  pub.get_user = function(pio_uid, callback) {
     var endpoint = USERS_ENDPOINT.concat('/', pio_uid, '.json');
     make_request(endpoint, 'GET', callback);
   }
 
   // Deletes a user.
-  var delete_user = function(pio_uid, callback) {
+  pub.delete_user = function(pio_uid, callback) {
     var endpoint = USERS_ENDPOINT.concat('/', pio_uid, '.json');
     make_request(endpoint, 'DELETE', callback);
   }
 
-  return {
-    add_user: add_user,
-    get_user: get_user,
-    delete_user: delete_user,
-  };
+  return pub;
 }
