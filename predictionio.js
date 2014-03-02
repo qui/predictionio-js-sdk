@@ -39,9 +39,11 @@ var predictionio = function (app_key, options) {
 
     request.onreadystatechange = function() {
       if(request.readyState == 4 && request.status == 200) {
+        console.log(request.responseText);
         var response_obj = JSON.parse(request.responseText);
         callback(response_obj);
       }
+      // Adding a user returns 201, not 200. Better way to check for success?
     }
 
     if (method === "GET" || method === "DELETE") {
@@ -51,7 +53,7 @@ var predictionio = function (app_key, options) {
     }
     else if (method === "POST" || method === "PUT") {
       request.open(method, HOST.concat(url));
-      request.setRequestHeader("Content-type", "x-www-form-urlencoded");
+      request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       request.send(encode_data(data));
     }
     else {
