@@ -124,7 +124,7 @@ var predictionio = function (app_key, options) {
     if (action_info.pio_action === "rate") {
       throw new Error("For record, if pio_action is rate, pio_rate is required.");
     }
-    make_request(ACTIONS_ENDPOINT.concat('/u2i.json'), 'POST', {});
+    make_request(ACTIONS_ENDPOINT.concat('/u2i.json'), 'POST', action_info);
   };
 
   return pub;

@@ -35,11 +35,13 @@ describe("User API and general tests", function() {
   });
 
   it("Add user", function() {
-    client.add_user({'pio_uid': 'user_id'}, callback);
+    var req_info = {'pio_uid': 'user_id', 'age': '23', 'pio_active': 'true'}
+    client.add_user(req_info, callback);
+    req_info["pio_appkey"] = "app_key";
+    expect(utils.decode_body(server.requests[0].requestBody)).toEqual(req_info);
     server.respond();
     expect(callback.calledOnce).toBe(true);
   });
-  // How to check that POST body is being sent properly?
 
   it("Add user without uid", function() {
     expect(function () {
@@ -101,7 +103,10 @@ describe("Item API tests", function() {
   });
 
   it("Add item", function() {
-    client.add_item({'pio_iid': 'item_id', 'pio_itypes': 'type1,type2'}, callback);
+    var req_info = {'pio_iid': 'item_id', 'pio_itypes': 'type1,type2'};
+    client.add_item(req_info, callback);
+    req_info["pio_appkey"] = "app_key";
+    expect(utils.decode_body(server.requests[0].requestBody)).toEqual(req_info);
     server.respond();
     expect(callback.calledOnce).toBe(true);
   });
@@ -162,6 +167,13 @@ describe("Action API tests", function () {
     expect(function () {
       client.record({'pio_uid': 'uid', 'pio_iid': 'id', 'pio_action': 'rate'});
     }).toThrowError();
+  });
+
+  it("Record action", function () {
+    var req_info = {'pio_uid': 'user', 'pio_iid': 'item', 'pio_action': 'like', 'pio_t': '2013-09-10T03:06:12Z'};
+    client.record(req_info);
+    req_info["pio_appkey"] = "app_key";
+    expect(utils.decode_body(server.requests[0].requestBody)).toEqual(req_info);
   });
 
 });
