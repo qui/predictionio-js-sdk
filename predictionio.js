@@ -13,7 +13,9 @@ var predictionio = function (app_key, options) {
     HOST = 'http://localhost:8000/',
     USERS_ENDPOINT = 'users',
     ITEMS_ENDPOINT = 'items',
-    ACTIONS_ENDPOINT = 'actions';
+    ACTIONS_ENDPOINT = 'actions',
+    ITEMREC_ENDPOINT = 'engines/itemrec',
+    ITEMSIM_ENDPOINT = 'engines/itemsim';
 
   if (!app_key) {
       throw new Error('An app key is required to use the API.');
@@ -125,6 +127,20 @@ var predictionio = function (app_key, options) {
       throw new Error("For record, if pio_action is rate, pio_rate is required.");
     }
     make_request(ACTIONS_ENDPOINT.concat('/u2i.json'), 'POST', action_info);
+  };
+
+  // Get top N recommendations for a user, from a recommendation engine.
+  pub.item_recommendations = function (engine_name, query, callback) {
+    check_required_params(query, ['pio_uid', 'pio_n'], 'item_recommendations');
+    var endpoint = ITEMREC_ENDPOINT.concat('/', engine_name, '/topn.json');
+    make_request(endpoint, 'GET', query, callback);
+  };
+
+  // Get top N similar items to the given item, from a similarity engine.
+  pub.similar_items = function (engine_name, query, callback) {
+    check_required_params(query, ['pio_iid', 'pio_n'], 'similar_items');
+    var endpoint = ITEMSIM_ENDPOINT.concat('/', engine_name, '/topn.json');
+    make_request(endpoint, 'GET', query, callback);
   };
 
   return pub;

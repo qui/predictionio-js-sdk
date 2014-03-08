@@ -38,7 +38,7 @@ describe("User API and general tests", function() {
     var req_info = {'pio_uid': 'user_id', 'age': '23', 'pio_active': 'true'}
     client.add_user(req_info, callback);
     req_info["pio_appkey"] = "app_key";
-    expect(utils.decode_body(server.requests[0].requestBody)).toEqual(req_info);
+    expect(utils.decode_params(server.requests[0].requestBody)).toEqual(req_info);
     server.respond();
     expect(callback.calledOnce).toBe(true);
   });
@@ -106,7 +106,7 @@ describe("Item API tests", function() {
     var req_info = {'pio_iid': 'item_id', 'pio_itypes': 'type1,type2'};
     client.add_item(req_info, callback);
     req_info["pio_appkey"] = "app_key";
-    expect(utils.decode_body(server.requests[0].requestBody)).toEqual(req_info);
+    expect(utils.decode_params(server.requests[0].requestBody)).toEqual(req_info);
     server.respond();
     expect(callback.calledOnce).toBe(true);
   });
@@ -173,7 +173,70 @@ describe("Action API tests", function () {
     var req_info = {'pio_uid': 'user', 'pio_iid': 'item', 'pio_action': 'like', 'pio_t': '2013-09-10T03:06:12Z'};
     client.record(req_info);
     req_info["pio_appkey"] = "app_key";
-    expect(utils.decode_body(server.requests[0].requestBody)).toEqual(req_info);
+    expect(utils.decode_params(server.requests[0].requestBody)).toEqual(req_info);
+  });
+
+});
+
+describe("Engine API tests", function() {
+
+  var client = predictionio("app_key", {"host": ""}),
+      server,
+      callback;
+
+  beforeEach(function() {
+    server = sinon.fakeServer.create();
+    server.respondWith("GET", /^engines\/itemrec\/[^\t,]+\/topn\.json\?.+/, '{"pio_iids": ["item1"]}');
+    server.respondWith("GET", /^engines\/itemsim\/[^\t,]+\/topn\.json\?.+/, '{"pio_iids": ["item1"]}');
+    callback = sinon.spy();
+  });
+
+  afterEach(function() {
+    server.restore();
+    callback.reset();
+  });
+
+  it("Get top n recommendations", function() {
+    var query = {'pio_uid': 'user', 'pio_n': '4'};
+    var recs = client.item_recommendations('engine2', query, callback);
+    query["pio_appkey"] = "app_key";
+    expect(utils.decode_url_params(server.requests[0].url)).toEqual(query);
+    server.respond();
+    expect(callback.calledOnce).toBe(true);
+    // How to check that engine2 is in url properly?
+  });
+
+  it("Get top n recommendations, missing param(s)", function() {
+    expect(function () {
+      client.item_recommendations('engine', {'other_key': 'value'}, callback);
+    }).toThrowError();
+    expect(function () {
+      client.item_recommendations('engine', {'pio_uid': 'user'}, callback);
+    }).toThrowError();
+    expect(function () {
+      client.item_recommendations('engine', {'pio_n': '5'}, callback);
+    }).toThrowError();
+  });
+
+  it("Get top n similar items", function() {
+    var query = {'pio_iid': 'item', 'pio_n': '10'};
+    var recs = client.similar_items('engine', query, callback);
+    query["pio_appkey"] = "app_key";
+    expect(utils.decode_url_params(server.requests[0].url)).toEqual(query);
+    server.respond();
+    expect(callback.calledOnce).toBe(true);
+  });
+
+  it("Get top n similar items, missing param(s)", function() {
+    expect(function () {
+      client.similar_items('engine', {'other_key': 'value'}, callback);
+    }).toThrowError();
+    expect(function () {
+      client.similar_items('engine', {'pio_iid': 'item'}, callback);
+    }).toThrowError();
+    expect(function () {
+      client.similar_items('engine', {'pio_n': '5'}, callback);
+    }).toThrowError();
   });
 
 });
