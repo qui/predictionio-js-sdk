@@ -38,13 +38,12 @@ var predictionio = function (app_key, options) {
     var request = new XMLHttpRequest();
 
     request.onreadystatechange = function() {
-      if(request.readyState == 4 && request.status == 200) {
-        console.log(request.responseText);
+      if(request.readyState == 4 && Math.floor(request.status/100) == 2) {
         var response_obj = JSON.parse(request.responseText);
         callback(response_obj);
       }
       // Adding a user returns 201, not 200. Better way to check for success?
-    }
+    };
 
     if (method === "GET" || method === "DELETE") {
       var final_url = HOST.concat(url, "?", encode_data(data));
