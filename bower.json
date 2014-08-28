@@ -1,0 +1,25 @@
+{
+  "name": "predictionio-js-sdk",
+  "version": "0.1.0",
+  "description": "JavaScript SDK for interacting with the PredictionIO API.",
+  "main": "predictionio.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "predictionio"
+  ],
+  "authors": [
+    "qui"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/qui/predictionio-js-sdk",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "testing"
+  ]
+}
